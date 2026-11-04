@@ -1,0 +1,86 @@
+{
+  "checked_at": "2026-11-04T02:32:37.841925+00:00",
+  "evidence": "real browser/HTTP/SQLite, public GitHub API and local Ollama",
+  "sync": {
+    "documents": 10,
+    "changed": 10,
+    "scope": "README.md ve docs/ altından en fazla 12 Markdown belgesi"
+  },
+  "import_revision": "6a2b2da7c05addcde5b233a2e1f94ef272c08887",
+  "answer_mode": "llm",
+  "retrieval_mode": "hybrid",
+  "claims": [
+    {
+      "text": "Redis, tenant-scope (kiracı) bazlı hız sınırlama (rate limiting) amacıyla kullanılmaktadır.",
+      "citations": [
+        "cc305708-3d7a-45ef-9a3a-86b741c57e0f"
+      ]
+    },
+    {
+      "text": "Redis, envanter okuma ve yazma işlemlerinden kasıtlı olarak hari tutulmuştur.",
+      "citations": [
+        "a0566214-4418-4af1-a398-8542a9254efb"
+      ]
+    },
+    {
+      "text": "PostgreSQL, envanter (stock) ve idempotency'yi (tekrar edilebilirlik) yönetmek için tercih edilirken Redis bu işlevlerden sorumluluk almamaktadır.",
+      "citations": [
+        "a0566214-4418-4af1-a398-8542a9254efb",
+        "cc305708-3d7a-45ef-9a3a-86b741c57e0f"
+      ]
+    },
+    {
+      "text": "Redis, Kafka ile birlikte mesajlaşma veya envanter okuma/yazma amaçlı değil, hız sınırlama için tercih edilen bir bileşendir.",
+      "citations": [
+        "812b3524-56ac-456d-a236-787e7cabe251",
+        "cc305708-3d7a-45ef-9a3a-86b741c57e0f"
+      ]
+    }
+  ],
+  "snapshots": [
+    {
+      "state": "success",
+      "head_sha": "a8bc28f1cd5462ee1d6389b3d5c07c04f64817c8",
+      "checks": [
+        {
+          "name": "Validate",
+          "state": "success",
+          "head_sha": "a8bc28f1cd5462ee1d6389b3d5c07c04f64817c8",
+          "url": "https://github.com/caglarhekimci/procureflow-next/actions/runs/41561077376"
+        },
+        {
+          "name": "Docker validation",
+          "state": "success",
+          "head_sha": "a8bc28f1cd5462ee1d6389b3d5c07c04f64817c8",
+          "url": "https://github.com/caglarhekimci/procureflow-next/actions/runs/41561077350"
+        }
+      ],
+      "historical_failures": 0,
+      "observed_at": "2026-11-04T02:32:37.307198+00:00",
+      "repository": "caglarhekimci/procureflow-next",
+      "branch": "main"
+    },
+    {
+      "state": "success",
+      "head_sha": "6a2b2da7c05addcde5b233a2e1f94ef272c08887",
+      "checks": [
+        {
+          "name": "CI",
+          "state": "success",
+          "head_sha": "6a2b2da7c05addcde5b233a2e1f94ef272c08887",
+          "url": "https://github.com/caglarhekimci/stockledger-go/actions/runs/41561248087"
+        },
+        {
+          "name": "Docker validation",
+          "state": "success",
+          "head_sha": "6a2b2da7c05addcde5b233a2e1f94ef272c08887",
+          "url": "https://github.com/caglarhekimci/stockledger-go/actions/runs/41561248052"
+        }
+      ],
+      "historical_failures": 1,
+      "observed_at": "2026-11-04T02:32:37.839920+00:00",
+      "repository": "caglarhekimci/stockledger-go",
+      "branch": "main"
+    }
+  ]
+}

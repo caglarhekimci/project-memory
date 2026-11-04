@@ -5,6 +5,8 @@
 
 **Return to a project with its decisions, sources and current checks in view.** A personal Turkish workspace with versioned knowledge, cited retrieval and commit-scoped GitHub status.
 
+![Real local model answer and live GitHub checks](docs/images/workspace-desktop.png)
+
 ## The story
 
 I work across multiple repositories. After a break I repeatedly reconstruct why a decision was made, what was implemented, and which test actually passed. An old GitHub failure email can make a fixed project look broken.
@@ -100,6 +102,8 @@ uv run python scripts/evaluate.py --output test-results/lexical.json
 uv run python scripts/calibrate.py
 uv run python scripts/evaluate.py --models --generate --gate --output test-results/ollama.json
 ```
+
+`uv run python scripts/verify_live.py` performs an opt-in real public-GitHub/model/browser check in a temporary database and refreshes the public-fixture screenshots. It requires internet access, local models and Chromium.
 
 The last two require real local models. CI's deterministic/provider tests are distinct from the real-model experiment. CI also exercises both Docker storage modes, actual-container browser flows and persistence after container replacement.
 

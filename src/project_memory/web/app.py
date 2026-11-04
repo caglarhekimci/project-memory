@@ -21,6 +21,7 @@ from project_memory.adapters.store import SqlMemoryStore
 from project_memory.application.answers import AnswerService
 from project_memory.application.ingestion import Ingestor
 from project_memory.application.retrieval import Retriever
+from project_memory.application.sync import RepositorySync, SyncInProgress
 from project_memory.bootstrap import seed_demo
 from project_memory.domain.models import ProviderUnavailable, SourceInput
 from project_memory.settings import Settings
@@ -50,6 +51,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         else None
     )
     ingestor = Ingestor(store, model)
+    syncer = RepositorySync(store, github, ingestor)
     answers = AnswerService(Retriever(store, model, config.dense_threshold), model)
     auth = OwnerAuth(config, store)
     busy = threading.BoundedSemaphore(2)
@@ -102,6 +104,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             yield
         finally:
             busy.release()
+
+    @app.exception_handler(SyncInProgress)
+    async def sync_conflict(_: Request, error: SyncInProgress) -> JSONResponse:
+        return JSONResponse({"detail": str(error)}, status_code=409)
 
     @app.get("/", include_in_schema=False)
     def index(request: Request) -> Response:
@@ -198,14 +204,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if not project.repository:
             raise HTTPException(409, "Bu projeye bağlı GitHub deposu yok.")
         with operation():
-            documents = github.documents(project.repository)
-            prepared = [(document, ingestor.prepare(document)) for document in documents]
-            results = store.replace_repository_sources(project_id, prepared)
-        return {
-            "documents": len(documents),
-            "changed": sum(r.changed for r in results),
-            "scope": "README.md ve docs/ altından en fazla 12 Markdown belgesi",
-        }
+            result = syncer.run(project_id, project.repository)
+        return asdict(result)
 
     @app.post("/api/projects/{project_id}/checks", dependencies=[Depends(auth.require_owner)])
     def checks(project_id: str) -> dict[str, Any]:

@@ -37,6 +37,8 @@ Projects contain stable sources, sources contain immutable revisions, and revisi
 
 SQLite uses WAL, foreign keys, a busy timeout and a process-local writer lock. PostgreSQL uses per-project transaction-scoped advisory locks and native pgvector cosine. The supported deployment has one web worker; horizontal scaling requires shared throttling and transactional quotas. `metadata.create_all` is repeatable v1 schema bootstrap, not an upgrade migration framework. Future schema changes require explicit migrations and backup rehearsal.
 
+The complete fetch/embedding/replace cycle is serialized per project. A second concurrent sync returns 409 before fetching, so a slower old snapshot cannot reactivate after a newer one. Cross-process sync coordination would be required before supporting multiple workers.
+
 ## Retrieval
 
 Paragraph-aware chunks have a hard 1,200-character limit. Turkish-normalized BM25 and model-digest-scoped dense search contribute up to 20 candidates each; reciprocal-rank fusion selects five. Vector dimensions must match. The configurable BGE-M3 cutoff was calibrated on different questions from the fixed regression benchmark.

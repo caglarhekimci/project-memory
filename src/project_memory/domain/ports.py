@@ -43,3 +43,7 @@ class Embedder(Protocol):
 
 class Generator(Protocol):
     def generate(self, question: str, evidence: list[dict[str, str]]) -> dict[str, object]: ...
+
+
+class RepositoryReader(Protocol):
+    def documents(self, repository: str) -> list[SourceInput]: ...

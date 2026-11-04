@@ -1,6 +1,6 @@
 {
   "dataset": "2026-11-04-v1",
-  "checked_at": "2026-11-04T02:17:54.869130+00:00",
+  "checked_at": "2026-11-04T02:32:31.037050+00:00",
   "evidence": "real local Ollama",
   "gates": {
     "supported_recall_at_3": 0.85,
@@ -91,7 +91,7 @@
           "rank": 1,
           "mode": "lexical",
           "warnings": [],
-          "elapsed_ms": 0
+          "elapsed_ms": 15
         },
         {
           "id": "p1",
@@ -164,7 +164,7 @@
           "rank": null,
           "mode": "lexical",
           "warnings": [],
-          "elapsed_ms": 15
+          "elapsed_ms": 0
         },
         {
           "id": "u2",
@@ -232,7 +232,7 @@
           "rank": 1,
           "mode": "hybrid",
           "warnings": [],
-          "elapsed_ms": 16
+          "elapsed_ms": 31
         },
         {
           "id": "d3",
@@ -246,7 +246,7 @@
           "rank": 1,
           "mode": "hybrid",
           "warnings": [],
-          "elapsed_ms": 15
+          "elapsed_ms": 31
         },
         {
           "id": "d4",
@@ -274,7 +274,7 @@
           "rank": 1,
           "mode": "hybrid",
           "warnings": [],
-          "elapsed_ms": 15
+          "elapsed_ms": 16
         },
         {
           "id": "d6",
@@ -287,7 +287,7 @@
           "rank": 1,
           "mode": "hybrid",
           "warnings": [],
-          "elapsed_ms": 16
+          "elapsed_ms": 15
         },
         {
           "id": "p1",
@@ -301,7 +301,7 @@
           "rank": 2,
           "mode": "hybrid",
           "warnings": [],
-          "elapsed_ms": 16
+          "elapsed_ms": 31
         },
         {
           "id": "p2",
@@ -316,7 +316,7 @@
           "rank": 1,
           "mode": "hybrid",
           "warnings": [],
-          "elapsed_ms": 31
+          "elapsed_ms": 16
         },
         {
           "id": "p3",
@@ -331,7 +331,7 @@
           "rank": 1,
           "mode": "hybrid",
           "warnings": [],
-          "elapsed_ms": 16
+          "elapsed_ms": 31
         },
         {
           "id": "p4",
@@ -344,7 +344,7 @@
           "rank": 1,
           "mode": "hybrid",
           "warnings": [],
-          "elapsed_ms": 15
+          "elapsed_ms": 16
         },
         {
           "id": "h1",
@@ -368,9 +368,11 @@
           "expected": null,
           "found": [],
           "rank": null,
-          "mode": "hybrid",
-          "warnings": [],
-          "elapsed_ms": 15
+          "mode": "lexical",
+          "warnings": [
+            "Anlamsal eşleşme eşiği aşılmadı; sözcük araması kullanıldı."
+          ],
+          "elapsed_ms": 31
         },
         {
           "id": "u2",
@@ -379,9 +381,11 @@
           "expected": null,
           "found": [],
           "rank": null,
-          "mode": "hybrid",
-          "warnings": [],
-          "elapsed_ms": 16
+          "mode": "lexical",
+          "warnings": [
+            "Anlamsal eşleşme eşiği aşılmadı; sözcük araması kullanıldı."
+          ],
+          "elapsed_ms": 15
         },
         {
           "id": "u3",
@@ -390,9 +394,11 @@
           "expected": null,
           "found": [],
           "rank": null,
-          "mode": "hybrid",
-          "warnings": [],
-          "elapsed_ms": 31
+          "mode": "lexical",
+          "warnings": [
+            "Anlamsal eşleşme eşiği aşılmadı; sözcük araması kullanıldı."
+          ],
+          "elapsed_ms": 16
         },
         {
           "id": "u4",
@@ -401,9 +407,11 @@
           "expected": null,
           "found": [],
           "rank": null,
-          "mode": "hybrid",
-          "warnings": [],
-          "elapsed_ms": 0
+          "mode": "lexical",
+          "warnings": [
+            "Anlamsal eşleşme eşiği aşılmadı; sözcük araması kullanıldı."
+          ],
+          "elapsed_ms": 16
         }
       ]
     }
@@ -418,24 +426,24 @@
         {
           "text": "Redis yalnızca hız sınırlama amacıyla kullanılır.",
           "citations": [
-            "409c54b8-32cf-43b4-92d8-2b693642e978"
+            "f82c9c1b-1a46-476e-83fe-f5547831f453"
           ]
         },
         {
           "text": "Stok ve rezervasyon kayıtları PostgreSQL üzerinde tutulur.",
           "citations": [
-            "409c54b8-32cf-43b4-92d8-2b693642e978"
+            "f82c9c1b-1a46-476e-83fe-f5547831f453"
           ]
         },
         {
           "text": "Redis asıl stok veritabanı değildir.",
           "citations": [
-            "409c54b8-32cf-43b4-92d8-2b693642e978"
+            "f82c9c1b-1a46-476e-83fe-f5547831f453"
           ]
         }
       ],
       "citation_ids_valid": true,
-      "elapsed_ms": 1469
+      "elapsed_ms": 1515
     },
     {
       "id": "d5",
@@ -446,18 +454,18 @@
         {
           "text": "Talebi oluşturan requester kendi satın alma talebini onaylayamaz.",
           "citations": [
-            "8b6dd3bc-df04-4d22-b7a1-ead0c133d7a6"
+            "538109a2-79fa-4c72-a73d-2da6b49ab12d"
           ]
         },
         {
           "text": "Onay ve ret işlemlerini approver rolündeki başka bir kullanıcı yapar.",
           "citations": [
-            "8b6dd3bc-df04-4d22-b7a1-ead0c133d7a6"
+            "538109a2-79fa-4c72-a73d-2da6b49ab12d"
           ]
         }
       ],
       "citation_ids_valid": true,
-      "elapsed_ms": 906
+      "elapsed_ms": 922
     },
     {
       "id": "u4",

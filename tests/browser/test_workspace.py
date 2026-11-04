@@ -60,7 +60,10 @@ def browser_app(tmp_path_factory):
             yield browser, origin
             browser.close()
     finally:
-        process.terminate()
+        if sys.platform == "win32":
+            subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True)
+        else:
+            process.terminate()
         process.wait(timeout=10)
         log.close()
 

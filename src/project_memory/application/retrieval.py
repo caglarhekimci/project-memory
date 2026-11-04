@@ -106,13 +106,15 @@ class Retriever:
                     key=lambda i: dense[i],
                     reverse=True,
                 )
-                if dense:
+                if semantic:
                     ranks.append(semantic)
                     mode = "hybrid"
-                else:
+                elif not dense:
                     warnings.append(
                         "Bu model sürümünde indekslenmiş kaynak yok; sözcük araması kullanıldı."
                     )
+                else:
+                    warnings.append("Anlamsal eşleşme eşiği aşılmadı; sözcük araması kullanıldı.")
             except ProviderUnavailable:
                 warnings.append("Embedding modeli erişilemiyor; sözcük araması kullanıldı.")
         fused: dict[int, float] = {}

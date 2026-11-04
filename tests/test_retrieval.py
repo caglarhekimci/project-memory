@@ -116,3 +116,12 @@ def test_calibrated_semantic_threshold_rejects_irrelevant_range(memory):
     spec = SourceInput("semantic", "Karar", "Yinelenen kayıt önlenir.", "", "v1", datetime.now(UTC))
     store.put_source(project.id, spec, [ChunkDraft(spec.body, (0.3, 0.9539392014), "test:v1")])
     assert Retriever(store, FixedEmbedding()).search(project.id, "astronomy").evidence == ()
+
+
+def test_lexical_only_evidence_does_not_claim_hybrid_mode(memory):
+    store, project = memory
+    spec = SourceInput("redis", "Redis", "Redis hız sınırlar.", "", "v1", datetime.now(UTC))
+    store.put_source(project.id, spec, [ChunkDraft(spec.body, (0.3, 0.9539392014), "test:v1")])
+    result = Retriever(store, FixedEmbedding()).search(project.id, "Redis")
+    assert result.evidence
+    assert result.mode == "lexical"
