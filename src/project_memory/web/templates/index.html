@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Proje kararlarını hatırla, güncel durumu kaynaklarıyla öğren.">
+  <title>Proje Hafızası · Project Memory</title>
+  <link rel="icon" href="/static/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/app.css"><script src="/static/app.js" defer></script>
+</head>
+<body data-demo="{{ 'true' if demo else 'false' }}">
+<a class="skip-link" href="#question">Soruna geç</a>
+<div id="workspace" class="workspace" hidden>
+  <aside class="sidebar" aria-label="Projeler">
+    <a class="brand" href="/"><img src="/static/mark.svg" width="36" height="36" alt=""><span>proje<span class="brand-light">hafızası</span><small>PERSONAL WORKSPACE</small></span></a>
+    <div class="workspace-label"><span class="live-dot"></span> Kişisel çalışma alanın</div>
+    <div class="section-label">PROJELER <span id="project-count">0</span></div>
+    <nav id="project-list" class="project-list" aria-label="Proje seç"></nav>
+    <button id="new-project" class="add-project"><span aria-hidden="true">＋</span> Yeni proje</button>
+    <div class="sidebar-note"><span class="note-symbol" aria-hidden="true">↗</span><strong>Bir kararın izi kaybolmasın.</strong><p>Belgeler, notlar ve kontroller aynı bağlamda.</p></div>
+    <div class="sidebar-footer"><span class="avatar">PH</span><div><strong>Yerel çalışma alanı</strong><small id="storage-label">Kişisel veritabanı</small></div><button id="logout" class="icon-button" aria-label="Oturumu kapat" title="Oturumu kapat">↪</button></div>
+  </aside>
+  <div class="main-shell">
+    <header class="topbar"><div><span class="muted">Çalışma alanı</span><span class="breadcrumb-slash">/</span><strong id="breadcrumb">Genel bakış</strong></div><div class="topbar-actions"><span id="environment" class="environment"></span><button id="mobile-logout" class="icon-button mobile-only" aria-label="Oturumu kapat">↪</button></div></header>
+    <main id="main-content">
+      <div class="page-intro"><div><div class="eyebrow"><span class="tiny-square"></span> BAĞLAMIN, KALDIĞIN YERDE.</div><h1>Projeye geri dön.<br><span>Bağlamı kaybetme.</span></h1><p>Kararlarını hatırla. Kaynağını gör. Güncel durumu kontrol et.</p></div><button id="add-note" class="button secondary"><span aria-hidden="true">＋</span><span>Not ekle</span></button></div>
+      <section class="summary-strip" aria-label="Proje özeti"><div><span class="stat-icon" aria-hidden="true">▤</span><div><small>Bilgi kaynakları</small><strong id="source-count">0</strong></div></div><div><span class="stat-icon" aria-hidden="true">⌘</span><div><small>Bağlı depo</small><strong id="repo-short">—</strong></div></div><div><span class="stat-icon" aria-hidden="true">◎</span><div><small>Yanıt yöntemi</small><strong id="model-label">Kaynak alıntıları</strong></div></div></section>
+      <div class="content-grid">
+        <section class="knowledge-column" aria-label="Proje bilgisi">
+          <div class="tabs" role="tablist" aria-label="Çalışma görünümü"><button role="tab" id="ask-tab" aria-selected="true" aria-controls="ask-view">Sor &amp; keşfet</button><button role="tab" id="sources-tab" aria-selected="false" aria-controls="sources-view">Kaynaklar <span id="tab-source-count">0</span></button></div>
+          <div id="ask-view" role="tabpanel" aria-labelledby="ask-tab">
+            <form id="question-form" class="question-card"><div class="card-kicker"><span class="spark" aria-hidden="true">✳</span> PROJENE BİR SORU SOR</div><label for="question" class="sr-only">Projen hakkında bir soru sor</label><textarea id="question" maxlength="1000" minlength="2" required placeholder="Bu projede Redis neden kullanılıyor?"></textarea><div class="question-tools"><label class="checkbox-label"><input type="checkbox" id="include-checks"> Güncel GitHub kontrollerini de sorgula</label><button type="submit" id="ask-button" class="button primary">Kaynaklarda ara <span aria-hidden="true">↗</span></button></div></form>
+            <div class="suggestions-label">BİR YERDEN BAŞLA</div><div id="suggestions" class="suggestions"></div>
+            <section id="answer-panel" class="answer-panel" aria-live="polite" hidden></section>
+            <section id="evidence-panel" class="evidence-panel" hidden><div class="section-heading"><h2>Yanıtın dayandığı kaynaklar</h2><span class="muted">Sürüm bilgisiyle birlikte</span></div><div id="evidence-list"></div></section>
+            <div id="empty-prompt" class="empty-prompt"><div class="memory-illustration" aria-hidden="true"><span class="paper back"></span><span class="paper front"><i></i><i></i><i></i></span><span class="memory-dot">✳</span></div><h2>İyi bir cevap, bir kaynaktan başlar.</h2><p>Bir soru sor veya projene bir not ekle.<br>Yanıtın hangi belgeye dayandığını birlikte görelim.</p></div>
+          </div>
+          <div id="sources-view" role="tabpanel" aria-labelledby="sources-tab" hidden><div class="sources-toolbar"><p>Seçili projenin aktif belgeleri ve kişisel notları.</p><button id="sync" class="button secondary small">↻ Depodan güncelle</button></div><p id="sync-result" class="muted" role="status"></p><div id="source-list"></div></div>
+        </section>
+        <aside class="context-column" aria-label="Güncel durum ve rehber">
+          <section class="context-card"><div class="card-top"><span class="label">GITHUB KONTROLLERİ</span><span class="status-dot"></span></div><h2>Şu an ne durumda?</h2><p>Varsayılan dalın güncel commit’ine ait sonuçları doğrudan GitHub’dan öğren.</p><div id="check-results" class="check-results"><div class="unverified"><span aria-hidden="true">◷</span> Henüz sorgulanmadı</div></div><button id="refresh-checks" class="button secondary full">GitHub’ı kontrol et <span aria-hidden="true">↗</span></button><p class="footnote">Sonuçlar sorgulama anına aittir. Her yenilemede yeniden kontrol edilir.</p></section>
+          <section class="guide-card"><div class="card-kicker">NASIL ÇALIŞIR?</div><ol><li><span>01</span><div><strong>Bağlamı bulur</strong><p>Seçili projenin aktif kaynaklarında arar.</p></div></li><li><span>02</span><div><strong>Kanıtı gösterir</strong><p>Belgeyi, sürümü ve ilgili alıntıyı birlikte sunar.</p></div></li><li><span>03</span><div><strong>Belirsizliği söyler</strong><p>Yeterli kaynak yoksa bunu açıkça belirtir.</p></div></li></ol></section>
+          <div id="demo-note" class="demo-note" hidden>Örnek belgeler 3 Kasım 2026 tarihli geliştirme kayıtlarını temsil eder. Canlı GitHub sonuçları ayrıca sorgulanır.</div>
+        </aside>
+      </div>
+      <footer class="page-footer"><span class="live-dot"></span> Kaynaklarıyla hatırlayan bir çalışma alanı.<span>PROJECT MEMORY / v1.0</span></footer>
+    </main>
+  </div>
+</div>
+<div id="toast" role="status" class="toast" hidden></div>
+<dialog id="login-dialog" class="login-dialog" aria-labelledby="login-heading"><form id="login-form"><img src="/static/mark.svg" width="48" height="48" alt=""><div class="eyebrow">PROJE HAFIZASI</div><h1 id="login-heading">Kaldığın yerden.</h1><p>Belgelerin, kararların ve güncel kontrollerin<br>tek çalışma alanında.</p>{% if demo %}<div class="demo-login">Örnek çalışma alanı parolası:<br><code>project-memory-demo</code></div>{% endif %}<label for="password">Çalışma alanı parolası</label><input id="password" type="password" autocomplete="current-password" maxlength="256" required><p id="login-error" class="error-text" role="alert"></p><button class="button primary full" type="submit">Çalışma alanına gir <span aria-hidden="true">↗</span></button><small>Veriler bu uygulamanın veritabanında saklanır.</small></form></dialog>
+<dialog id="note-dialog" aria-labelledby="note-heading"><form id="note-form"><div class="dialog-heading"><h2 id="note-heading">Yeni not</h2><button type="button" class="icon-button close-dialog" aria-label="Pencereyi kapat">×</button></div><p>Bir karar, gerekçe veya çalışma notu ekle.</p><label for="note-title">Not başlığı</label><input id="note-title" maxlength="200" required><label for="note-body">Not içeriği</label><textarea id="note-body" rows="8" maxlength="100000" required></textarea><div class="dialog-actions"><button type="button" class="button secondary close-dialog">Vazgeç</button><button type="submit" class="button primary">Notu kaydet</button></div></form></dialog>
+<dialog id="project-dialog" aria-labelledby="project-heading"><form id="project-form"><div class="dialog-heading"><h2 id="project-heading">Yeni proje</h2><button type="button" class="icon-button close-dialog" aria-label="Pencereyi kapat">×</button></div><label for="project-name">Proje adı</label><input id="project-name" maxlength="100" required><label for="project-repo">GitHub deposu <span class="muted">· isteğe bağlı</span></label><input id="project-repo" placeholder="owner/repository" maxlength="140"><label for="project-workflows">Beklenen kontrol adları <span class="muted">· virgülle ayır</span></label><input id="project-workflows" placeholder="CI, Docker validation" maxlength="800"><p class="footnote">Başarılı durum için burada belirttiğin tüm kontrollerin güncel commit’te tamamlanması gerekir.</p><div class="dialog-actions"><button type="button" class="button secondary close-dialog">Vazgeç</button><button type="submit" class="button primary">Projeyi oluştur</button></div></form></dialog>
+<dialog id="delete-dialog" aria-labelledby="delete-heading"><form id="delete-form"><h2 id="delete-heading">Kaynağı sil</h2><p id="delete-description"></p><p>Tüm kayıtlı sürümleri ve arama parçaları silinir.</p><div class="dialog-actions"><button type="button" class="button secondary close-dialog">Vazgeç</button><button class="button danger" type="submit">Kaynağı sil</button></div></form></dialog>
+</body></html>

@@ -44,13 +44,6 @@ def tokenize(text: str) -> list[str]:
     return [t for t in re.findall(r"[a-z0-9_]+", normalized) if t not in STOP_WORDS]
 
 
-def cosine(a: tuple[float, ...], b: tuple[float, ...]) -> float:
-    if len(a) != len(b) or not a:
-        return 0.0
-    denominator = math.sqrt(sum(x * x for x in a) * sum(x * x for x in b))
-    return sum(x * y for x, y in zip(a, b, strict=True)) / denominator if denominator else 0.0
-
-
 def bm25(query: list[str], documents: list[list[str]]) -> list[float]:
     if not documents:
         return []
@@ -77,9 +70,12 @@ def bm25(query: list[str], documents: list[list[str]]) -> list[float]:
 
 
 class Retriever:
-    def __init__(self, store: MemoryStore, embedder: Embedder | None = None) -> None:
+    def __init__(
+        self, store: MemoryStore, embedder: Embedder | None = None, minimum_dense_score: float = 0.4
+    ) -> None:
         self.store = store
         self.embedder = embedder
+        self.minimum_dense_score = minimum_dense_score
 
     def search(self, project_id: str, question: str, limit: int = 5) -> SearchResult:
         candidates = self.store.chunks(project_id)
@@ -99,13 +95,14 @@ class Retriever:
             try:
                 batch = self.embedder.embed([question])
                 vector = batch.vectors[0]
+                stored_scores = self.store.dense_scores(project_id, batch.space, vector)
                 dense = {
-                    i: cosine(vector, c.embedding)
+                    i: stored_scores[c.id]
                     for i, c in enumerate(candidates)
-                    if c.embedding is not None and c.embedding_space == batch.space
+                    if c.id in stored_scores
                 }
                 semantic = sorted(
-                    (i for i, score in dense.items() if score >= 0.5),
+                    (i for i, score in dense.items() if score >= self.minimum_dense_score),
                     key=lambda i: dense[i],
                     reverse=True,
                 )
@@ -118,10 +115,10 @@ class Retriever:
                     )
             except ProviderUnavailable:
                 warnings.append("Embedding modeli erişilemiyor; sözcük araması kullanıldı.")
-        fused: Counter[int] = Counter()
+        fused: dict[int, float] = {}
         for ranking in ranks:
             for rank, index in enumerate(ranking[:20], start=1):
-                fused[index] += 1 / (60 + rank)
+                fused[index] = fused.get(index, 0.0) + 1 / (60 + rank)
         top = sorted(fused, key=lambda i: fused[i], reverse=True)[:limit]
         return SearchResult(
             tuple(Evidence(candidates[i], fused[i]) for i in top), mode, tuple(warnings)

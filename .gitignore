@@ -16,4 +16,5 @@ playwright-report/
 *.db
 *.db-*
 dist/
+node_modules/
 *.egg-info/

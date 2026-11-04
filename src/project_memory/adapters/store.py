@@ -1,6 +1,7 @@
 """One transactional contract for portable SQLite and PostgreSQL/pgvector."""
 
 import hashlib
+import json
 import threading
 import uuid
 from datetime import UTC, datetime
@@ -37,6 +38,7 @@ from project_memory.domain.models import (
     SourceInput,
     SourceRecord,
 )
+from project_memory.domain.vectors import cosine
 
 metadata = MetaData()
 projects = Table(
@@ -167,78 +169,145 @@ class SqlMemoryStore:
     def put_source(
         self, project_id: str, source: SourceInput, drafts: list[ChunkDraft]
     ) -> ImportResult:
-        body_hash = hashlib.sha256(source.body.encode()).hexdigest()
         with self._lock, self.engine.begin() as conn:
             self._lock_project(conn, project_id)
-            row = (
-                conn.execute(
-                    select(sources).where(
-                        sources.c.project_id == project_id,
-                        sources.c.source_key == source.source_key,
-                    )
+            return self._put_source(conn, project_id, source, drafts)
+
+    def _put_source(
+        self, conn: Connection, project_id: str, source: SourceInput, drafts: list[ChunkDraft]
+    ) -> ImportResult:
+        body_hash = hashlib.sha256(source.body.encode()).hexdigest()
+        row = (
+            conn.execute(
+                select(sources).where(
+                    sources.c.project_id == project_id,
+                    sources.c.source_key == source.source_key,
                 )
-                .mappings()
-                .first()
             )
-            source_id = row["id"] if row else str(uuid.uuid4())
-            if row is None:
-                conn.execute(
-                    insert(sources).values(
-                        id=source_id,
-                        project_id=project_id,
-                        source_key=source.source_key,
-                        kind=source.kind,
-                    )
+            .mappings()
+            .first()
+        )
+        source_id = row["id"] if row else str(uuid.uuid4())
+        if row is None:
+            conn.execute(
+                insert(sources).values(
+                    id=source_id,
+                    project_id=project_id,
+                    source_key=source.source_key,
+                    kind=source.kind,
                 )
-            old = (
-                conn.execute(
-                    select(versions).where(
-                        versions.c.source_id == source_id, versions.c.revision == source.revision
-                    )
-                )
-                .mappings()
-                .first()
             )
-            if old:
-                if old["content_hash"] != body_hash:
-                    raise ValueError("Immutable revision has different content")
-                conn.execute(
-                    update(versions).where(versions.c.source_id == source_id).values(active=False)
+        old = (
+            conn.execute(
+                select(versions).where(
+                    versions.c.source_id == source_id, versions.c.revision == source.revision
                 )
-                conn.execute(update(versions).where(versions.c.id == old["id"]).values(active=True))
-                count = conn.execute(
-                    select(func.count()).select_from(chunks).where(chunks.c.version_id == old["id"])
-                ).scalar_one()
-                return ImportResult(source_id, False, count)
+            )
+            .mappings()
+            .first()
+        )
+        if old:
+            if old["content_hash"] != body_hash:
+                raise ValueError("Immutable revision has different content")
             conn.execute(
                 update(versions).where(versions.c.source_id == source_id).values(active=False)
             )
-            version_id = str(uuid.uuid4())
+            conn.execute(update(versions).where(versions.c.id == old["id"]).values(active=True))
+            spaces: set[str] = set(
+                conn.execute(
+                    select(chunks.c.embedding_space).where(chunks.c.version_id == old["id"])
+                ).scalars()
+            )
+            new_spaces = {draft.embedding_space for draft in drafts}
+            if new_spaces != spaces and any(draft.embedding is not None for draft in drafts):
+                conn.execute(delete(chunks).where(chunks.c.version_id == old["id"]))
+                self._insert_chunks(conn, old["id"], drafts)
+                return ImportResult(source_id, True, len(drafts))
+            count = conn.execute(
+                select(func.count()).select_from(chunks).where(chunks.c.version_id == old["id"])
+            ).scalar_one()
+            return ImportResult(source_id, False, count)
+        conn.execute(update(versions).where(versions.c.source_id == source_id).values(active=False))
+        version_id = str(uuid.uuid4())
+        conn.execute(
+            insert(versions).values(
+                id=version_id,
+                source_id=source_id,
+                title=source.title,
+                body=source.body,
+                url=source.url,
+                revision=source.revision,
+                content_hash=body_hash,
+                observed_at=source.observed_at.astimezone(UTC).isoformat(),
+                active=True,
+            )
+        )
+        self._insert_chunks(conn, version_id, drafts)
+        return ImportResult(source_id, True, len(drafts))
+
+    def _insert_chunks(self, conn: Connection, version_id: str, drafts: list[ChunkDraft]) -> None:
+        for ordinal, draft in enumerate(drafts):
             conn.execute(
-                insert(versions).values(
-                    id=version_id,
-                    source_id=source_id,
-                    title=source.title,
-                    body=source.body,
-                    url=source.url,
-                    revision=source.revision,
-                    content_hash=body_hash,
-                    observed_at=source.observed_at.astimezone(UTC).isoformat(),
-                    active=True,
+                insert(chunks).values(
+                    id=str(uuid.uuid4()),
+                    version_id=version_id,
+                    ordinal=ordinal,
+                    text=draft.text,
+                    embedding=list(draft.embedding) if draft.embedding is not None else None,
+                    embedding_space=draft.embedding_space,
                 )
             )
-            for ordinal, draft in enumerate(drafts):
-                conn.execute(
-                    insert(chunks).values(
-                        id=str(uuid.uuid4()),
-                        version_id=version_id,
-                        ordinal=ordinal,
-                        text=draft.text,
-                        embedding=list(draft.embedding) if draft.embedding is not None else None,
-                        embedding_space=draft.embedding_space,
+
+    def replace_repository_sources(
+        self, project_id: str, prepared: list[tuple[SourceInput, list[ChunkDraft]]]
+    ) -> list[ImportResult]:
+        with self._lock, self.engine.begin() as conn:
+            self._lock_project(conn, project_id)
+            results = [
+                self._put_source(conn, project_id, source, drafts) for source, drafts in prepared
+            ]
+            keys = {source.source_key for source, _ in prepared}
+            obsolete = select(sources.c.id).where(
+                sources.c.project_id == project_id,
+                sources.c.kind == "repository",
+                sources.c.source_key.not_in(keys),
+            )
+            conn.execute(
+                update(versions).where(versions.c.source_id.in_(obsolete)).values(active=False)
+            )
+            return results
+
+    def dense_scores(
+        self, project_id: str, space: str, vector: tuple[float, ...]
+    ) -> dict[str, float]:
+        if self.engine.dialect.name == "postgresql":
+            statement = text("""
+                SELECT c.id, 1 - (c.embedding <=> CAST(:query AS vector)) AS similarity
+                FROM chunks c JOIN versions v ON c.version_id = v.id
+                JOIN sources s ON v.source_id = s.id
+                WHERE s.project_id = :project AND v.active = true
+                  AND c.embedding_space = :space AND c.embedding IS NOT NULL
+                  AND vector_dims(c.embedding) = :dimensions
+                ORDER BY similarity DESC LIMIT 20
+            """)
+            with self.engine.connect() as conn:
+                return {
+                    r.id: float(r.similarity)
+                    for r in conn.execute(
+                        statement,
+                        {
+                            "query": json.dumps(vector),
+                            "project": project_id,
+                            "space": space,
+                            "dimensions": len(vector),
+                        },
                     )
-                )
-            return ImportResult(source_id, True, len(drafts))
+                }
+        return {
+            chunk.id: cosine(vector, chunk.embedding)
+            for chunk in self.chunks(project_id)
+            if chunk.embedding is not None and chunk.embedding_space == space
+        }
 
     def sources(self, project_id: str) -> list[SourceRecord]:
         counts = (

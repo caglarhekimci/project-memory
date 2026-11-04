@@ -1,19 +1,41 @@
 """Catch cross-project leaks, stale revisions and broken durable writes."""
 
+import os
+import uuid
 from datetime import UTC, datetime, timedelta
 
 import pytest
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
 
 from project_memory.adapters.store import SqlMemoryStore
 from project_memory.domain.models import ChunkDraft, SourceInput
 
 
-@pytest.fixture
-def store(tmp_path):
-    instance = SqlMemoryStore(f"sqlite:///{tmp_path / 'memory.db'}")
+@pytest.fixture(params=["sqlite", pytest.param("postgres", marks=pytest.mark.postgres)])
+def store(tmp_path, request):
+    admin = None
+    schema = None
+    if request.param == "postgres":
+        configured = os.getenv("TEST_DATABASE_URL")
+        if not configured:
+            pytest.skip("TEST_DATABASE_URL is not configured")
+        admin = create_engine(configured)
+        schema = "pm_test_" + uuid.uuid4().hex
+        with admin.begin() as conn:
+            conn.execute(text(f'CREATE SCHEMA "{schema}"'))
+        url = make_url(configured).update_query_dict({"options": f"-csearch_path={schema},public"})
+        instance = SqlMemoryStore(url.render_as_string(hide_password=False))
+    else:
+        instance = SqlMemoryStore(f"sqlite:///{tmp_path / 'memory.db'}")
     instance.initialize()
     yield instance
     instance.close()
+    if admin is not None and schema is not None:
+        assert schema.startswith("pm_test_") and len(schema) == 40
+        with admin.begin() as conn:
+            conn.execute(text(f'DROP SCHEMA "{schema}" CASCADE'))
+        admin.dispose()
 
 
 def source(body="Redis yalnızca hız sınırlama için kullanılır.", revision="a" * 40):
@@ -115,3 +137,38 @@ def test_repository_sync_deactivates_deleted_paths_but_keeps_personal_notes(stor
     store.put_source(project.id, note, [ChunkDraft("Kişisel not")])
     store.reconcile_repository_sources(project.id, set())
     assert [c.text for c in store.chunks(project.id)] == ["Kişisel not"]
+
+
+def test_same_revision_can_be_reindexed_with_a_new_embedding_space(store):
+    project = store.create_project("Reindex")
+    store.put_source(project.id, source(), [ChunkDraft("Redis")])
+    store.put_source(project.id, source(), [ChunkDraft("Redis", (1.0, 0.0), "new:v1")])
+    assert store.chunks(project.id)[0].embedding_space == "new:v1"
+    assert store.sources(project.id)[0].version_count == 1
+
+
+def test_dense_scores_are_project_and_model_scoped(store):
+    project = store.create_project("Dense")
+    other = store.create_project("Other")
+    store.put_source(project.id, source(), [ChunkDraft("Redis", (1.0, 0.0), "new:v1")])
+    stored = store.chunks(project.id)[0]
+    scores = store.dense_scores(project.id, "new:v1", (1.0, 0.0))
+    assert scores[stored.id] == pytest.approx(1.0)
+    assert store.dense_scores(other.id, "new:v1", (1.0, 0.0)) == {}
+    assert store.dense_scores(project.id, "old:v1", (1.0, 0.0)) == {}
+
+
+def test_batch_import_rolls_back_all_sources_if_one_revision_is_invalid(store):
+    project = store.create_project("Atomic")
+    store.put_source(project.id, source(), [ChunkDraft("İlk")])
+    new = SourceInput("new.md", "New", "Yeni", "", "new", datetime.now(UTC), "repository")
+    with pytest.raises(ValueError, match="revision"):
+        store.replace_repository_sources(
+            project.id,
+            [
+                (new, [ChunkDraft("Yeni")]),
+                (source("Bozuk aynı sürüm"), [ChunkDraft("Bozuk")]),
+            ],
+        )
+    assert len(store.sources(project.id)) == 1
+    assert store.chunks(project.id)[0].text == "İlk"

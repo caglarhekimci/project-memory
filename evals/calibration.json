@@ -1,0 +1,15 @@
+{
+  "purpose": "A separate relevance-threshold calibration split. These questions are excluded from the fixed regression benchmark. The small corpus remains shared; this does not establish out-of-domain generalization.",
+  "questions": [
+    {"project": "ledger", "question": "Uygulama çok fazla çağrı alınca yükü kim sınırlıyor?", "relevant": true},
+    {"project": "ledger", "question": "Rezervasyonu yanlışlıkla iki defa göndersem çift işlem olur mu?", "relevant": true},
+    {"project": "ledger", "question": "Sistem çökerken bildirim ile kayıt birbirinden kopar mı?", "relevant": true},
+    {"project": "procure", "question": "Formu dolduranın kendi isteğini kabul etmesi mümkün mü?", "relevant": true},
+    {"project": "procure", "question": "Uygulamayı yeniden kurunca sipariş talepleri kalıyor mu?", "relevant": true},
+    {"project": "ledger", "question": "Ahtapotların kaç kalbi vardır?", "relevant": false},
+    {"project": "ledger", "question": "Antarktika kıtasında hangi kuş türleri yaşar?", "relevant": false},
+    {"project": "procure", "question": "Mozart hangi tarihte doğdu?", "relevant": false},
+    {"project": "procure", "question": "Güneş sisteminin en uzak gezegeni nedir?", "relevant": false},
+    {"project": "ledger", "question": "Klasik mercimek çorbası tarifi nedir?", "relevant": false}
+  ]
+}

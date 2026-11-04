@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-11-04T02:16:51.742763+00:00",
+  "rows": [
+    {
+      "project": "ledger",
+      "question": "Uygulama çok fazla çağrı alınca yükü kim sınırlıyor?",
+      "relevant": true,
+      "maximum_cosine": 0.4809483925016246
+    },
+    {
+      "project": "ledger",
+      "question": "Rezervasyonu yanlışlıkla iki defa göndersem çift işlem olur mu?",
+      "relevant": true,
+      "maximum_cosine": 0.5474761275403567
+    },
+    {
+      "project": "ledger",
+      "question": "Sistem çökerken bildirim ile kayıt birbirinden kopar mı?",
+      "relevant": true,
+      "maximum_cosine": 0.5488533161280492
+    },
+    {
+      "project": "procure",
+      "question": "Formu dolduranın kendi isteğini kabul etmesi mümkün mü?",
+      "relevant": true,
+      "maximum_cosine": 0.6054401431334101
+    },
+    {
+      "project": "procure",
+      "question": "Uygulamayı yeniden kurunca sipariş talepleri kalıyor mu?",
+      "relevant": true,
+      "maximum_cosine": 0.557090862700001
+    },
+    {
+      "project": "ledger",
+      "question": "Ahtapotların kaç kalbi vardır?",
+      "relevant": false,
+      "maximum_cosine": 0.30741197572074463
+    },
+    {
+      "project": "ledger",
+      "question": "Antarktika kıtasında hangi kuş türleri yaşar?",
+      "relevant": false,
+      "maximum_cosine": 0.24542276099041246
+    },
+    {
+      "project": "procure",
+      "question": "Mozart hangi tarihte doğdu?",
+      "relevant": false,
+      "maximum_cosine": 0.2407737173541706
+    },
+    {
+      "project": "procure",
+      "question": "Güneş sisteminin en uzak gezegeni nedir?",
+      "relevant": false,
+      "maximum_cosine": 0.21669561744914628
+    },
+    {
+      "project": "ledger",
+      "question": "Klasik mercimek çorbası tarifi nedir?",
+      "relevant": false,
+      "maximum_cosine": 0.29060667966235265
+    }
+  ],
+  "lowest_relevant": 0.4809483925016246,
+  "highest_irrelevant": 0.30741197572074463
+}

@@ -32,6 +32,9 @@ class Ingestor:
         self.embedder = embedder
 
     def ingest(self, project_id: str, source: SourceInput) -> ImportResult:
+        return self.store.put_source(project_id, source, self.prepare(source))
+
+    def prepare(self, source: SourceInput) -> list[ChunkDraft]:
         if not source.body.strip() or len(source.body) > 100_000:
             raise ValueError("Source must contain 1–100000 characters")
         parts = chunk_markdown(source.body)
@@ -44,4 +47,4 @@ class Ingestor:
             ]
         else:
             drafts = [ChunkDraft(p) for p in parts]
-        return self.store.put_source(project_id, source, drafts)
+        return drafts

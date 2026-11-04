@@ -1,0 +1,30 @@
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:${PM_PORT:-4180}:4180"
+    environment:
+      PM_DEMO_MODE: "${PM_DEMO_MODE:-true}"
+      PM_APP_PASSWORD: "${PM_APP_PASSWORD:-}"
+      PM_ORIGIN: "${PM_ORIGIN:-http://127.0.0.1:4180}"
+      PM_DATABASE_URL: "sqlite:////app/data/memory.db"
+      PM_MODEL_BACKEND: "${PM_MODEL_BACKEND:-extractive}"
+      PM_OLLAMA_URL: "http://host.docker.internal:11434"
+      PM_MODEL: "${PM_MODEL:-qwen3.5:9b}"
+      PM_EMBEDDING_MODEL: "${PM_EMBEDDING_MODEL:-bge-m3}"
+      PM_DENSE_THRESHOLD: "${PM_DENSE_THRESHOLD:-0.4}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - memory_data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+volumes:
+  memory_data:

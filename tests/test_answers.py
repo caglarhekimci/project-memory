@@ -80,3 +80,16 @@ def test_generated_claims_keep_only_valid_source_identifiers(memory):
     result = AnswerService(Retriever(store), Grounded()).answer(project.id, "Redis")
     assert result.mode == "llm"
     assert result.claims[0].citations == (result.evidence[0].chunk.id,)
+
+
+def test_short_model_citations_map_back_to_immutable_chunk_ids(memory):
+    store, project = memory
+
+    class ShortCitations:
+        def generate(self, question, evidence):
+            assert evidence[0]["id"] == "S1"
+            return {"claims": [{"text": "Redis hız sınırlar.", "citations": ["S1"]}]}
+
+    result = AnswerService(Retriever(store), ShortCitations()).answer(project.id, "Redis")
+    assert result.mode == "llm"
+    assert result.claims[0].citations == (result.evidence[0].chunk.id,)

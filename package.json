@@ -1,0 +1,13 @@
+{
+  "name": "project-memory-ui-checks",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write src/project_memory/web/static/app.js src/project_memory/web/static/app.css",
+    "format:check": "prettier --check src/project_memory/web/static/app.js src/project_memory/web/static/app.css",
+    "check": "node --check src/project_memory/web/static/app.js"
+  },
+  "devDependencies": {
+    "axe-core": "4.14.0",
+    "prettier": "3.9.10"
+  }
+}

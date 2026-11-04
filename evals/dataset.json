@@ -1,0 +1,30 @@
+{
+  "version": "2026-11-04-v1",
+  "purpose": "Curated public-fixture regression benchmark, frozen before first model experiment. No training data is used. This small dataset does not establish production accuracy.",
+  "gates": {"supported_recall_at_3": 0.85, "supported_mrr": 0.6, "unanswerable_abstention": 1.0},
+  "documents": [
+    {"key": "redis", "project": "ledger", "title": "Redis ve stok", "body": "Redis yalnızca hız sınırlama için kullanılır. Stok ve rezervasyon kayıtları PostgreSQL üzerinde tutulur. Redis asıl stok veritabanı değildir."},
+    {"key": "outbox", "project": "ledger", "title": "Olay teslimi", "body": "Stok değişikliği ve outbox kaydı aynı veritabanı transaction işlemi içinde yazılır. Worker outbox olaylarını Kafka'ya gönderir. At-least-once teslim nedeniyle tüketiciler event_id ile tekrarları ayırt etmelidir."},
+    {"key": "idempotency", "project": "ledger", "title": "Idempotency", "body": "Idempotency anahtarı aynı rezervasyon isteğinin tekrarında önceki kaydı döndürür. Aynı anahtar farklı bir istek içeriğiyle kullanılırsa 409 çakışma yanıtı verilir."},
+    {"key": "old-ci", "project": "ledger", "title": "Geçmiş Docker olayı", "body": "Kayıtlı eski Docker hatası Compose YAML dosyasındaki yazım sorunundan kaynaklanmıştı. Bu geçmiş bir kayıttır. Güncel main test sonuçları GitHub API üzerinden ayrıca sorgulanmalıdır."},
+    {"key": "approval", "project": "procure", "title": "Onay yetkileri", "body": "Talebi oluşturan requester kendi satın alma talebini onaylayamaz. Onay ve ret işlemlerini approver rolündeki başka bir kullanıcı yapar. Viewer yalnızca görüntüleyebilir."},
+    {"key": "money", "project": "procure", "title": "Para ve kalıcılık", "body": "Para tutarları kayan nokta yerine tam sayı kuruş olarak saklanır. Veriler SQLite veritabanındadır. Docker named volume konteyner yeniden oluşturulurken kayıtların ve oturumların korunmasını sağlar."}
+  ],
+  "questions": [
+    {"id": "d1", "project": "ledger", "question": "Redis hangi amaçla kullanılıyor?", "expected": "redis", "type": "direct"},
+    {"id": "d2", "project": "ledger", "question": "Stok kayıtları PostgreSQL üzerinde mi?", "expected": "redis", "type": "direct"},
+    {"id": "d3", "project": "ledger", "question": "Kafka olaylarında tekrarlar nasıl ayırt edilir?", "expected": "outbox", "type": "direct"},
+    {"id": "d4", "project": "ledger", "question": "Idempotency anahtarı farklı içerikle kullanılırsa ne olur?", "expected": "idempotency", "type": "direct"},
+    {"id": "d5", "project": "procure", "question": "Talebi oluşturan requester onaylayabilir mi?", "expected": "approval", "type": "direct"},
+    {"id": "d6", "project": "procure", "question": "Para tutarları nasıl saklanır?", "expected": "money", "type": "direct"},
+    {"id": "p1", "project": "ledger", "question": "İstek trafiğinin aşırı artmasını hangi bileşen engelliyor?", "expected": "redis", "type": "paraphrase"},
+    {"id": "p2", "project": "ledger", "question": "Mesaj kuyruğu ile veritabanının tutarlılığı nasıl korunuyor?", "expected": "outbox", "type": "paraphrase"},
+    {"id": "p3", "project": "ledger", "question": "Aynı işlem iki kez gönderildiğinde ikinci kayıt oluşur mu?", "expected": "idempotency", "type": "paraphrase"},
+    {"id": "p4", "project": "procure", "question": "Konteyneri değiştirirsem bilgilerimi kaybeder miyim?", "expected": "money", "type": "paraphrase"},
+    {"id": "h1", "project": "ledger", "question": "Geçmiş Docker hatası güncel main sonuçlarını kanıtlar mı?", "expected": "old-ci", "type": "historical"},
+    {"id": "u1", "project": "ledger", "question": "Satürn gezegeninin halkaları hangi maddelerden oluşur?", "expected": null, "type": "unanswerable"},
+    {"id": "u2", "project": "procure", "question": "Penguenlerin doğal yaşam alanı neresidir?", "expected": null, "type": "unanswerable"},
+    {"id": "u3", "project": "ledger", "question": "Osmanlı padişahları hangi sırayla hüküm sürmüştür?", "expected": null, "type": "unanswerable"},
+    {"id": "u4", "project": "procure", "question": "Mars gezegeninin atmosfer basıncı kaç paskaldır?", "expected": null, "type": "unanswerable"}
+  ]
+}

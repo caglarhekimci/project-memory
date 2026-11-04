@@ -50,17 +50,19 @@ class AnswerService:
         if self.generator:
             supplied = [
                 {
-                    "id": e.chunk.id,
+                    "id": f"S{index}",
                     "title": e.chunk.title,
                     "text": e.chunk.text,
                     "revision": e.chunk.revision,
                 }
-                for e in search.evidence
+                for index, e in enumerate(search.evidence, start=1)
             ]
             try:
                 generated = ModelAnswer.model_validate(self.generator.generate(question, supplied))
-                allowed = {e.chunk.id for e in search.evidence}
-                if any(set(claim.citations) - allowed for claim in generated.claims):
+                citation_map = {
+                    f"S{index}": e.chunk.id for index, e in enumerate(search.evidence, start=1)
+                }
+                if any(set(claim.citations) - citation_map.keys() for claim in generated.claims):
                     raise ValueError("Unknown citation")
                 if not generated.claims:
                     return Answer(
@@ -72,7 +74,10 @@ class AnswerService:
                         search.evidence,
                         tuple(warnings),
                     )
-                claims = tuple(Claim(c.text, tuple(c.citations)) for c in generated.claims)
+                claims = tuple(
+                    Claim(c.text, tuple(citation_map[key] for key in c.citations))
+                    for c in generated.claims
+                )
                 return Answer(
                     answer_id,
                     "grounded",

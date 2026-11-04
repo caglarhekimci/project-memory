@@ -1,0 +1,23 @@
+services:
+  app:
+    environment:
+      PM_DATABASE_URL: "postgresql+psycopg://memory:${PM_DB_PASSWORD:-local-demo-db-password}@db:5432/memory"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: memory
+      POSTGRES_PASSWORD: "${PM_DB_PASSWORD:-local-demo-db-password}"
+      POSTGRES_DB: memory
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U memory -d memory"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+volumes:
+  postgres_data:

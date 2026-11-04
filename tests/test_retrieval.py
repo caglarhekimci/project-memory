@@ -102,3 +102,17 @@ def test_embedding_outage_preserves_explicit_lexical_fallback(memory):
     assert result.mode == "lexical"
     assert len(result.evidence) == 1
     assert result.warnings
+
+
+def test_calibrated_semantic_threshold_accepts_supported_paraphrase_range(memory):
+    store, project = memory
+    spec = SourceInput("semantic", "Karar", "Yinelenen kayıt önlenir.", "", "v1", datetime.now(UTC))
+    store.put_source(project.id, spec, [ChunkDraft(spec.body, (0.45, 0.89302855497), "test:v1")])
+    assert Retriever(store, FixedEmbedding()).search(project.id, "idempotency").evidence
+
+
+def test_calibrated_semantic_threshold_rejects_irrelevant_range(memory):
+    store, project = memory
+    spec = SourceInput("semantic", "Karar", "Yinelenen kayıt önlenir.", "", "v1", datetime.now(UTC))
+    store.put_source(project.id, spec, [ChunkDraft(spec.body, (0.3, 0.9539392014), "test:v1")])
+    assert Retriever(store, FixedEmbedding()).search(project.id, "astronomy").evidence == ()

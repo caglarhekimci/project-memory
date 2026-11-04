@@ -1,0 +1,456 @@
+{
+  "dataset": "2026-11-04-v1",
+  "checked_at": "2026-11-04T02:15:17.179945+00:00",
+  "evidence": "real local Ollama",
+  "gates": {
+    "supported_recall_at_3": 0.85,
+    "supported_mrr": 0.6,
+    "unanswerable_abstention": 1.0
+  },
+  "reports": [
+    {
+      "mode": "lexical",
+      "supported_recall_at_3": 0.7272727272727273,
+      "supported_mrr": 0.7272727272727273,
+      "unanswerable_abstention": 1.0,
+      "rows": [
+        {
+          "id": "d1",
+          "type": "direct",
+          "question": "Redis hangi amaçla kullanılıyor?",
+          "expected": "redis",
+          "found": [
+            "redis"
+          ],
+          "rank": 1,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "d2",
+          "type": "direct",
+          "question": "Stok kayıtları PostgreSQL üzerinde mi?",
+          "expected": "redis",
+          "found": [
+            "redis",
+            "outbox"
+          ],
+          "rank": 1,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "d3",
+          "type": "direct",
+          "question": "Kafka olaylarında tekrarlar nasıl ayırt edilir?",
+          "expected": "outbox",
+          "found": [
+            "outbox"
+          ],
+          "rank": 1,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "d4",
+          "type": "direct",
+          "question": "Idempotency anahtarı farklı içerikle kullanılırsa ne olur?",
+          "expected": "idempotency",
+          "found": [
+            "idempotency"
+          ],
+          "rank": 1,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "d5",
+          "type": "direct",
+          "question": "Talebi oluşturan requester onaylayabilir mi?",
+          "expected": "approval",
+          "found": [
+            "approval"
+          ],
+          "rank": 1,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "d6",
+          "type": "direct",
+          "question": "Para tutarları nasıl saklanır?",
+          "expected": "money",
+          "found": [
+            "money"
+          ],
+          "rank": 1,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "p1",
+          "type": "paraphrase",
+          "question": "İstek trafiğinin aşırı artmasını hangi bileşen engelliyor?",
+          "expected": "redis",
+          "found": [
+            "idempotency"
+          ],
+          "rank": null,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "p2",
+          "type": "paraphrase",
+          "question": "Mesaj kuyruğu ile veritabanının tutarlılığı nasıl korunuyor?",
+          "expected": "outbox",
+          "found": [],
+          "rank": null,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "p3",
+          "type": "paraphrase",
+          "question": "Aynı işlem iki kez gönderildiğinde ikinci kayıt oluşur mu?",
+          "expected": "idempotency",
+          "found": [
+            "idempotency",
+            "outbox"
+          ],
+          "rank": 1,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "p4",
+          "type": "paraphrase",
+          "question": "Konteyneri değiştirirsem bilgilerimi kaybeder miyim?",
+          "expected": "money",
+          "found": [],
+          "rank": null,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "h1",
+          "type": "historical",
+          "question": "Geçmiş Docker hatası güncel main sonuçlarını kanıtlar mı?",
+          "expected": "old-ci",
+          "found": [
+            "old-ci"
+          ],
+          "rank": 1,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "u1",
+          "type": "unanswerable",
+          "question": "Satürn gezegeninin halkaları hangi maddelerden oluşur?",
+          "expected": null,
+          "found": [],
+          "rank": null,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "u2",
+          "type": "unanswerable",
+          "question": "Penguenlerin doğal yaşam alanı neresidir?",
+          "expected": null,
+          "found": [],
+          "rank": null,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "u3",
+          "type": "unanswerable",
+          "question": "Osmanlı padişahları hangi sırayla hüküm sürmüştür?",
+          "expected": null,
+          "found": [],
+          "rank": null,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        },
+        {
+          "id": "u4",
+          "type": "unanswerable",
+          "question": "Mars gezegeninin atmosfer basıncı kaç paskaldır?",
+          "expected": null,
+          "found": [],
+          "rank": null,
+          "mode": "lexical",
+          "warnings": [],
+          "elapsed_ms": 0
+        }
+      ]
+    },
+    {
+      "mode": "hybrid",
+      "supported_recall_at_3": 0.8181818181818182,
+      "supported_mrr": 0.8181818181818182,
+      "unanswerable_abstention": 1.0,
+      "rows": [
+        {
+          "id": "d1",
+          "type": "direct",
+          "question": "Redis hangi amaçla kullanılıyor?",
+          "expected": "redis",
+          "found": [
+            "redis"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 4297
+        },
+        {
+          "id": "d2",
+          "type": "direct",
+          "question": "Stok kayıtları PostgreSQL üzerinde mi?",
+          "expected": "redis",
+          "found": [
+            "redis",
+            "outbox"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 2218
+        },
+        {
+          "id": "d3",
+          "type": "direct",
+          "question": "Kafka olaylarında tekrarlar nasıl ayırt edilir?",
+          "expected": "outbox",
+          "found": [
+            "outbox"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 2188
+        },
+        {
+          "id": "d4",
+          "type": "direct",
+          "question": "Idempotency anahtarı farklı içerikle kullanılırsa ne olur?",
+          "expected": "idempotency",
+          "found": [
+            "idempotency"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 2375
+        },
+        {
+          "id": "d5",
+          "type": "direct",
+          "question": "Talebi oluşturan requester onaylayabilir mi?",
+          "expected": "approval",
+          "found": [
+            "approval"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 16
+        },
+        {
+          "id": "d6",
+          "type": "direct",
+          "question": "Para tutarları nasıl saklanır?",
+          "expected": "money",
+          "found": [
+            "money"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 15
+        },
+        {
+          "id": "p1",
+          "type": "paraphrase",
+          "question": "İstek trafiğinin aşırı artmasını hangi bileşen engelliyor?",
+          "expected": "redis",
+          "found": [
+            "idempotency"
+          ],
+          "rank": null,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 16
+        },
+        {
+          "id": "p2",
+          "type": "paraphrase",
+          "question": "Mesaj kuyruğu ile veritabanının tutarlılığı nasıl korunuyor?",
+          "expected": "outbox",
+          "found": [],
+          "rank": null,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 31
+        },
+        {
+          "id": "p3",
+          "type": "paraphrase",
+          "question": "Aynı işlem iki kez gönderildiğinde ikinci kayıt oluşur mu?",
+          "expected": "idempotency",
+          "found": [
+            "idempotency",
+            "outbox"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 2563
+        },
+        {
+          "id": "p4",
+          "type": "paraphrase",
+          "question": "Konteyneri değiştirirsem bilgilerimi kaybeder miyim?",
+          "expected": "money",
+          "found": [
+            "money"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 15
+        },
+        {
+          "id": "h1",
+          "type": "historical",
+          "question": "Geçmiş Docker hatası güncel main sonuçlarını kanıtlar mı?",
+          "expected": "old-ci",
+          "found": [
+            "old-ci"
+          ],
+          "rank": 1,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 16
+        },
+        {
+          "id": "u1",
+          "type": "unanswerable",
+          "question": "Satürn gezegeninin halkaları hangi maddelerden oluşur?",
+          "expected": null,
+          "found": [],
+          "rank": null,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 31
+        },
+        {
+          "id": "u2",
+          "type": "unanswerable",
+          "question": "Penguenlerin doğal yaşam alanı neresidir?",
+          "expected": null,
+          "found": [],
+          "rank": null,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 16
+        },
+        {
+          "id": "u3",
+          "type": "unanswerable",
+          "question": "Osmanlı padişahları hangi sırayla hüküm sürmüştür?",
+          "expected": null,
+          "found": [],
+          "rank": null,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 15
+        },
+        {
+          "id": "u4",
+          "type": "unanswerable",
+          "question": "Mars gezegeninin atmosfer basıncı kaç paskaldır?",
+          "expected": null,
+          "found": [],
+          "rank": null,
+          "mode": "hybrid",
+          "warnings": [],
+          "elapsed_ms": 16
+        }
+      ]
+    }
+  ],
+  "generated": [
+    {
+      "id": "d1",
+      "question": "Redis hangi amaçla kullanılıyor?",
+      "status": "grounded",
+      "mode": "llm",
+      "claims": [
+        {
+          "text": "Redis yalnızca hız sınırlama amacıyla kullanılır.",
+          "citations": [
+            "104f54a8-541c-4432-8e6a-2cc87eb87fa6"
+          ]
+        },
+        {
+          "text": "Stok ve rezervasyon kayıtları PostgreSQL üzerinde tutulur.",
+          "citations": [
+            "104f54a8-541c-4432-8e6a-2cc87eb87fa6"
+          ]
+        },
+        {
+          "text": "Redis asıl stok veritabanı değildir.",
+          "citations": [
+            "104f54a8-541c-4432-8e6a-2cc87eb87fa6"
+          ]
+        }
+      ],
+      "citation_ids_valid": true,
+      "elapsed_ms": 55406
+    },
+    {
+      "id": "d5",
+      "question": "Talebi oluşturan requester onaylayabilir mi?",
+      "status": "excerpts",
+      "mode": "extractive",
+      "claims": [
+        {
+          "text": "Talebi oluşturan requester kendi satın alma talebini onaylayamaz. Onay ve ret işlemlerini approver rolündeki başka bir kullanıcı yapar. Viewer yalnızca görüntüleyebilir.",
+          "citations": [
+            "b9fc4f75-83c6-4e26-b3fd-71e8788ff0d4"
+          ]
+        }
+      ],
+      "citation_ids_valid": true,
+      "elapsed_ms": 1516
+    },
+    {
+      "id": "u4",
+      "question": "Mars gezegeninin atmosfer basıncı kaç paskaldır?",
+      "status": "insufficient",
+      "mode": "none",
+      "claims": [],
+      "citation_ids_valid": true,
+      "elapsed_ms": 15
+    }
+  ],
+  "limits": "6 hand-authored documents, 15 curated questions; not a production quality estimate."
+}
