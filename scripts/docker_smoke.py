@@ -73,7 +73,8 @@ def main() -> None:
         assert "Ankara" in answer["claims"][0]["text"]
         assert all("İzmir" not in e["chunk"]["text"] for e in answer["evidence"])
         print(
-            "Docker persistence passed: original owner session, two source revisions and active cited answer survived replacement."
+            "Docker persistence passed: original owner session, two source revisions "
+            "and active cited answer survived replacement."
         )
 
 
